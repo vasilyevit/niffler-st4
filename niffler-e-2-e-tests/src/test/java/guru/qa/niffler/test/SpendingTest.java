@@ -7,6 +7,8 @@ import guru.qa.niffler.jupiter.GenerateSpend;
 import guru.qa.niffler.model.CurrencyValues;
 import guru.qa.niffler.model.SpendJson;
 import guru.qa.niffler.pages.LoginPage;
+import guru.qa.niffler.pages.MainPage;
+import guru.qa.niffler.pages.SpendsPage;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -21,11 +23,13 @@ public class SpendingTest {
     Configuration.browserSize = "1980x1024";
   }
   protected final LoginPage loginPage = new LoginPage();
+  protected final MainPage mainPage = new MainPage();
+  protected final SpendsPage spendsPage = new SpendsPage();
 
-//  @GenerateCategory(
-//          username = "duck",
-//          category = "Обучение"
-//  )
+  @GenerateCategory(
+          username = "duck",
+          category = "Обучение"
+  )
   @GenerateSpend(
       username = "duck",
       description = "QA.GURU Advanced 4",
@@ -36,22 +40,13 @@ public class SpendingTest {
   @Test
   void spendingShouldBeDeletedByButtonDeleteSpending(SpendJson spend) {
     Selenide.open("http://127.0.0.1:3000/main");
-    loginPage.clickLogin();
+    mainPage.clickLogin();
     loginPage.setUsername("duck");
     loginPage.setPassword("12345");
     loginPage.clickSubmit();
-    $(".spendings-table tbody")
-        .$$("tr")
-        .find(text(spend.description()))
-        .$$("td")
-        .first()
-        .click();
-
-    $(byText("Delete selected"))
-        .click();
-
-    $(".spendings-table tbody")
-        .$$("tr")
-        .shouldHave(size(0));
+    spendsPage.selectSpendByDescription(spend.description());
+    Integer oldCountSpend = spendsPage.getSpendsCount();
+    spendsPage.clickDeleteSelected();
+    spendsPage.checkSpendsCount(oldCountSpend-1);
   }
 }

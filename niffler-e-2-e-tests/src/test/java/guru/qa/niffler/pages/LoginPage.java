@@ -7,15 +7,9 @@ import static com.codeborne.selenide.Selenide.$;
 
 public class LoginPage {
 
-    private final SelenideElement login = $("a[href*='redirect']");
     private final SelenideElement username = $("input[name='username']");
     private final SelenideElement password = $("input[name='password']");
     private final SelenideElement submitForm =  $("button[type='submit']");
-
-    @Step("Нажатие кнопки Login")
-    public void clickLogin(){
-        login.click();
-    }
 
     @Step("Заполнить логин пользователя значением {value}")
     public void setUsername(String value){
