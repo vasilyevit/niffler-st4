@@ -20,8 +20,7 @@ public class SpendsPage {
         $(".spendings-table tbody")
                 .$$("tr")
                 .find(text(description))
-                .$$("td")
-                .first()
+                .$("td")
                 .scrollIntoView(true)
                 .click();
     }
