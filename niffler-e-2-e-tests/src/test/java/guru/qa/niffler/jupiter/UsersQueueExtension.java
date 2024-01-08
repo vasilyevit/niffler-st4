@@ -61,19 +61,17 @@ public class UsersQueueExtension implements BeforeEachCallback, AfterTestExecuti
             .filter(parameter -> parameter.isAnnotationPresent(User.class))
             .toList();
 
-    Map<Pair<String, User.UserType>, UserJson> testCandidates = new ConcurrentHashMap<>();
+    Map<Pair<String, User.UserType>, UserJson> testCandidates = new HashMap<>();
     for (Parameter parameter : parameters) {
       User annotation = parameter.getAnnotation(User.class);
-      if (annotation != null && parameter.getType().isAssignableFrom(UserJson.class)) {
         UserJson testCandidate = null;
         Queue<UserJson> queue = USERS.get(annotation.value());
         while (testCandidate == null) {
           testCandidate = queue.poll();
         }
         testCandidates.put(Pair.of(parameter.getName(), annotation.value()), testCandidate);
-        context.getStore(NAMESPACE).put(context.getUniqueId(), testCandidates);
-      }
     }
+    context.getStore(NAMESPACE).put(context.getUniqueId(), testCandidates);
   }
 
   @Override

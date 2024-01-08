@@ -14,7 +14,7 @@ public class FriendsWithOutForEachTest extends BaseWebTest  {
   @Test
   void friendsTableShouldNotBeEmpty(@User(WITH_FRIENDS) UserJson user) {
     login(user.username(),user.testData().password());
-    goToTabFriends();
+    menuPage.goToTabFriends();
     friendsPage.checkFriendsExist();
 
   }
@@ -22,21 +22,21 @@ public class FriendsWithOutForEachTest extends BaseWebTest  {
   @Test
   void friendsTableDisplayOfRequestInFriends(@User(INVITATION_RECEIVED) UserJson user) {
     login(user.username(),user.testData().password());
-    goToTabFriends();
+    menuPage.goToTabFriends();
     friendsPage.checkingTheDisplayOfRequestInFriends();
   }
 
   @Test
   void allPeopleTableDisplayOfRequestInFriends(@User(INVITATION_RECEIVED) UserJson user) {
     login(user.username(),user.testData().password());
-    goToTabAllPeople();
+    menuPage.goToTabAllPeople();
     allPeoplePage.checkingTheDisplayOfRequestInFriends();
   }
 
   @Test
   void allPeopleTableDisplayOfSentFriendRequest(@User(INVITATION_SEND) UserJson user) {
     login(user.username(),user.testData().password());
-    goToTabAllPeople();
+    menuPage.goToTabAllPeople();
     allPeoplePage.checkingTheDisplayOfSentFriendRequest();
   }
 }

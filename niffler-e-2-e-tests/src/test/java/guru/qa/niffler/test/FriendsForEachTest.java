@@ -19,13 +19,13 @@ public class FriendsForEachTest extends BaseWebTest  {
 
   @Test
   void friendsTableDisplayOfRequestInFriends() {
-    goToTabFriends();
+    menuPage.goToTabFriends();
     friendsPage.checkingTheDisplayOfRequestInFriends();
   }
 
   @Test
   void allPeopleTableDisplayOfRequestInFriends() {
-    goToTabAllPeople();
+    menuPage.goToTabAllPeople();
     allPeoplePage.checkingTheDisplayOfRequestInFriends();
   }
 }

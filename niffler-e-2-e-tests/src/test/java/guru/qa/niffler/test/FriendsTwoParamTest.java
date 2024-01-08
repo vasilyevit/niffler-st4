@@ -14,7 +14,7 @@ public class FriendsTwoParamTest extends BaseWebTest  {
   @Test
   void allPeopleTableDisplayOfSentFriendRequest2(@User(INVITATION_RECEIVED) UserJson user, @User(INVITATION_SEND) UserJson userRec) {
     login(user.username(),user.testData().password());
-    goToTabFriends();
+    menuPage.goToTabFriends();
     friendsPage.checkUserHaveRequest(userRec.username());
   }
 

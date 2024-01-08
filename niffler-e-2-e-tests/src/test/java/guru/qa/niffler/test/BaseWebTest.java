@@ -7,9 +7,6 @@ import guru.qa.niffler.pages.*;
 import io.qameta.allure.Step;
 import org.junit.jupiter.api.extension.ExtendWith;
 
-import static com.codeborne.selenide.Condition.visible;
-import static com.codeborne.selenide.Selenide.$x;
-
 @ExtendWith({BrowserExtension.class})
 public abstract class BaseWebTest {
 
@@ -23,21 +20,7 @@ public abstract class BaseWebTest {
     protected final SpendsPage spendsPage = new SpendsPage();
     protected final FriendsPage friendsPage = new FriendsPage();
     protected final AllPeoplePage allPeoplePage = new AllPeoplePage();
-
-    @Step("Переход на вкладку All People")
-    public void goToTabAllPeople() {
-        $x("//li[@data-tooltip-id='people']").shouldBe(visible).click();
-    }
-
-    @Step("Переход на вкладку Friends")
-    public void goToTabFriends() {
-        $x("//li[@data-tooltip-id='friends']").shouldBe(visible).click();
-    }
-
-    @Step("Переход на вкладку Main")
-    public void goToTabMain() {
-        $x("//li[@data-tooltip-id='main']").shouldBe(visible).click();
-    }
+    protected final MenuPage menuPage = new MenuPage();
 
     @Step("Авторизация с учетными данными {username}:{password}")
     public void login(String username, String password) {
