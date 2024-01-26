@@ -3,6 +3,7 @@ package guru.qa.niffler.db.repository;
 import guru.qa.niffler.db.DataSourceProvider;
 import guru.qa.niffler.db.JdbcUrl;
 import guru.qa.niffler.db.model.Authority;
+import guru.qa.niffler.db.model.CurrencyValues;
 import guru.qa.niffler.db.model.UserAuthEntity;
 import guru.qa.niffler.db.model.UserEntity;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
@@ -13,6 +14,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 public class UserRepositoryJdbc implements UserRepository {
@@ -86,7 +89,7 @@ public class UserRepositoryJdbc implements UserRepository {
               "(username, currency) " +
               "VALUES (?, ?)", PreparedStatement.RETURN_GENERATED_KEYS)) {
         ps.setString(1, user.getUsername());
-        ps.setString(2, user.getCurrency().name());
+        ps.setString(2, CurrencyValues.RUB.name());
         ps.executeUpdate();
 
         UUID userId;
@@ -107,11 +110,88 @@ public class UserRepositoryJdbc implements UserRepository {
 
   @Override
   public void deleteInAuthById(UUID id) {
-
+    try (Connection conn = authDs.getConnection()) {
+      conn.setAutoCommit(false);
+      try (PreparedStatement userPs = conn.prepareStatement(
+              "DELETE FROM \"user\" WHERE id = ? ;");
+           PreparedStatement authorityPs = conn.prepareStatement(
+                   "DELETE FROM \"authority\" where user_id = ? ;")
+      ) {
+        authorityPs.setObject(1, id);
+        authorityPs.executeUpdate();
+        userPs.setObject(1, id);
+        userPs.executeUpdate();
+        conn.commit();
+      } catch (Exception e) {
+        conn.rollback();
+        throw e;
+      } finally {
+        conn.setAutoCommit(true);
+      }
+    } catch (SQLException e) {
+      throw new RuntimeException(e);
+    }
   }
 
   @Override
   public void deleteInUserdataById(UUID id) {
-
+    try (Connection conn = udDs.getConnection()) {
+      try (PreparedStatement ps = conn.prepareStatement(
+              "DELETE FROM \"user\" WHERE id = ? ;")) {
+        ps.setObject(1, id);
+        ps.executeUpdate();
+      }
+    } catch (SQLException e) {
+      throw new RuntimeException(e);
+    }
   }
+
+  @Override
+  public void updateUser(UserAuthEntity user) {
+    try (Connection conn = authDs.getConnection()) {
+      PreparedStatement userPs = conn.prepareStatement("UPDATE \"user\" " +
+              "SET password = ?, enabled = ?, account_non_expired = ?, " +
+              "account_non_locked = ?, credentials_non_expired = ? WHERE id = ?");
+      userPs.setObject(1, pe.encode(user.getPassword()));
+      userPs.setBoolean(2, user.getEnabled());
+      userPs.setBoolean(3, user.getAccountNonExpired());
+      userPs.setBoolean(4, user.getAccountNonLocked());
+      userPs.setBoolean(5, user.getCredentialsNonExpired());
+      userPs.setObject(6, user.getId());
+      int rowsResult = userPs.executeUpdate();
+      if (rowsResult == 0) {
+        throw new IllegalStateException("Can`t find user with id " + user.getId());
+      }
+    } catch (SQLException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+  @Override
+  public UserAuthEntity getUserFromAuthById(UUID userId) {
+    UserAuthEntity userAuthEntity = new UserAuthEntity();
+    try (Connection conn = authDs.getConnection()) {
+      try (PreparedStatement authPs = conn.prepareStatement("SELECT * FROM \"user\" WHERE id = ?")) {
+        authPs.setObject(1, userId);
+        ResultSet authRs = authPs.executeQuery();
+        if (authRs.next()) {
+          userAuthEntity.setId((UUID) authRs.getObject("id"));
+          userAuthEntity.setUsername(authRs.getString("username"));
+          userAuthEntity.setPassword(authRs.getString("password"));
+          userAuthEntity.setEnabled(authRs.getBoolean("enabled"));
+          userAuthEntity.setAccountNonExpired(authRs.getBoolean("account_non_expired"));
+          userAuthEntity.setAccountNonLocked(authRs.getBoolean("account_non_locked"));
+          userAuthEntity.setCredentialsNonExpired(authRs.getBoolean("credentials_non_expired"));
+        } else {
+          throw new IllegalArgumentException("Can`t find user with id " + userId );
+        }
+        return userAuthEntity;
+      } catch (SQLException e) {
+        throw new RuntimeException(e);
+      }
+    } catch (SQLException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
 }
