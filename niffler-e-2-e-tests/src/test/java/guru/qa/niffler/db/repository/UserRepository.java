@@ -17,5 +17,9 @@ public interface UserRepository {
 
   void updateUser(UserAuthEntity user);
 
+  void updateUserData(UserEntity user);
+
   UserAuthEntity getUserFromAuthById(UUID userId);
+
+  UserEntity getUserFromUserdataById(UUID userId);
 }

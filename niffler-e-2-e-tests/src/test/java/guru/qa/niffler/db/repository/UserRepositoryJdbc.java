@@ -89,7 +89,7 @@ public class UserRepositoryJdbc implements UserRepository {
               "(username, currency) " +
               "VALUES (?, ?)", PreparedStatement.RETURN_GENERATED_KEYS)) {
         ps.setString(1, user.getUsername());
-        ps.setString(2, CurrencyValues.RUB.name());
+        ps.setString(2, user.getCurrency().name());
         ps.executeUpdate();
 
         UUID userId;
@@ -168,6 +168,25 @@ public class UserRepositoryJdbc implements UserRepository {
   }
 
   @Override
+  public void updateUserData(UserEntity user) {
+    try (Connection conn = udDs.getConnection()) {
+      PreparedStatement psUd = conn.prepareStatement(
+              "UPDATE \"user\" " +
+                      "SET username = ?, currency = ? " +
+                      "WHERE id = ?");
+        psUd.setString(1, user.getUsername());
+        psUd.setString(2, user.getCurrency().name());
+        psUd.setObject(3, user.getId());
+        int rowsResult = psUd.executeUpdate();
+        if (rowsResult == 0) {
+          throw new IllegalStateException("Can`t find user with id " + user.getId());
+        }
+      } catch (SQLException e) {
+        throw new RuntimeException(e);
+      }
+  }
+
+  @Override
   public UserAuthEntity getUserFromAuthById(UUID userId) {
     UserAuthEntity userAuthEntity = new UserAuthEntity();
     try (Connection conn = authDs.getConnection()) {
@@ -192,6 +211,28 @@ public class UserRepositoryJdbc implements UserRepository {
     } catch (SQLException e) {
       throw new RuntimeException(e);
     }
+  }
+
+  @Override
+  public UserEntity getUserFromUserdataById(UUID userId) {
+    UserEntity userEntity = new UserEntity();
+    try (Connection conn = udDs.getConnection()) {
+      try (PreparedStatement psUd = conn.prepareStatement(
+              "SELECT * FROM \"user\" WHERE id = ? ")) {
+        psUd.setObject(1, userId);
+        ResultSet psUdRs =  psUd.executeQuery();
+        if (psUdRs.next()) {
+          userEntity.setId((UUID) psUdRs.getObject("id"));
+          userEntity.setUsername(psUdRs.getString("username"));
+          userEntity.setCurrency(psUdRs.getObject("currency", CurrencyValues.class));
+        } else {
+          throw new IllegalArgumentException("Can`t find user with id " + userId );
+        }
+      }
+    } catch (SQLException e) {
+      throw new RuntimeException(e);
+    }
+    return userEntity;
   }
 
 }

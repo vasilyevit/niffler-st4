@@ -1,26 +1,25 @@
 package guru.qa.niffler.jupiter;
 
 import com.github.javafaker.Faker;
-import guru.qa.niffler.db.model.Authority;
-import guru.qa.niffler.db.model.AuthorityEntity;
-import guru.qa.niffler.db.model.UserAuthEntity;
-import guru.qa.niffler.db.model.UserEntity;
+import guru.qa.niffler.db.model.*;
 import guru.qa.niffler.db.repository.UserRepository;
+import guru.qa.niffler.db.repository.UserRepositoryJdbc;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.*;
 
 import java.lang.reflect.Method;
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 
 public class CreateUserDBExtension implements BeforeEachCallback, AfterTestExecutionCallback, ParameterResolver {
 
     public ExtensionContext.Namespace NAMESPACE = ExtensionContext.Namespace.create(CreateUserDBExtension.class);
-
-    private final UserRepositoryExtension userRepositoryExtension = new UserRepositoryExtension();
-    private UserRepository userRepository;
+    private final UserRepository userRepository = new UserRepositoryJdbc();
 
     Faker faker = new Faker();
+
+    static String userAuthKey = "userAuthDB";
+    static String userdataKey = "userdataDB";
+
 
     @Override
     public void beforeEach(ExtensionContext context) throws Exception {
@@ -30,8 +29,7 @@ public class CreateUserDBExtension implements BeforeEachCallback, AfterTestExecu
                 .filter(method -> method.isAnnotationPresent(BeforeEach.class))
                 .toList());
 
-        userRepositoryExtension.postProcessTestInstance(this, context);
-        Map<String, Object> userData = new ConcurrentHashMap<>();
+        Map<String, Object> userData = new HashMap<>();
         for (Method method : methods){
             DbUser annotation = method.getAnnotation(DbUser.class);
             if (annotation != null){
@@ -54,14 +52,16 @@ public class CreateUserDBExtension implements BeforeEachCallback, AfterTestExecu
                 );
 
                 UUID createdUserIdAuth = userRepository.createInAuth(userAuthDB).getId();
+                userAuthDB.setId(createdUserIdAuth);
+
                 UserEntity userdataDB = new UserEntity();
                 userdataDB.setUsername(username);
+                userdataDB.setCurrency(CurrencyValues.RUB);
                 UUID createdUserIdUserdata = userRepository.createInUserdata(userdataDB).getId();
+                userdataDB.setId(createdUserIdUserdata);
 
-                userData.put("userAuthDB", userAuthDB);
-                userData.put("createdUserIdAuth", createdUserIdAuth);
-                userData.put("userdataDB", userdataDB);
-                userData.put("createdUserIdUserdata", createdUserIdUserdata);
+                userData.put(userAuthKey, userAuthDB);
+                userData.put(userdataKey, userdataDB);
         }
         }
         context.getStore(NAMESPACE).put(context.getUniqueId(), userData);
@@ -70,8 +70,8 @@ public class CreateUserDBExtension implements BeforeEachCallback, AfterTestExecu
     @Override
     public void afterTestExecution(ExtensionContext context) throws Exception {
         Map userDataMap = context.getStore(NAMESPACE).get(context.getUniqueId(), Map.class);
-        UUID createdUserIdAuth = (UUID) userDataMap.get("createdUserIdAuth");
-        UUID createdUserIdUserdata = (UUID) userDataMap.get("createdUserIdUserdata");
+        UUID createdUserIdAuth = ((UserAuthEntity) userDataMap.get(userAuthKey)).getId();
+        UUID createdUserIdUserdata = ((UserEntity) userDataMap.get(userdataKey)).getId();
         if (createdUserIdAuth != null) {
             userRepository.deleteInAuthById(createdUserIdAuth);
         }
@@ -88,6 +88,6 @@ public class CreateUserDBExtension implements BeforeEachCallback, AfterTestExecu
     @Override
     public Object resolveParameter(ParameterContext parameterContext, ExtensionContext extensionContext) throws ParameterResolutionException {
         Map users = extensionContext.getStore(NAMESPACE).get(extensionContext.getUniqueId(), Map.class);
-        return users.get("userAuthDB");
+        return users.get(userAuthKey);
     }
 }
