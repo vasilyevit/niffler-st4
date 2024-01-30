@@ -220,4 +220,68 @@ public class UserRepositoryJdbc implements UserRepository {
       throw new RuntimeException(e);
     }
   }
+
+  @Override
+  public UserAuthEntity updateUserInAuth(UserAuthEntity user) {
+    try (Connection conn = authDs.getConnection()) {
+      conn.setAutoCommit(false);
+      try (PreparedStatement userPs = conn.prepareStatement("UPDATE \"user\" " +
+              "SET password = ?, enabled = ?, account_non_expired = ?, " +
+              "account_non_locked = ?, credentials_non_expired = ? WHERE id = ?");
+           PreparedStatement authorityInsertPs = conn.prepareStatement(
+                   "INSERT INTO \"authority\" (user_id, authority) VALUES (?, ?)");
+           PreparedStatement authorityDeletePs = conn.prepareStatement(
+                   "DELETE FROM \"authority\" WHERE user_id = ?");
+      ) {
+        userPs.setObject(1, pe.encode(user.getPassword()));
+        userPs.setBoolean(2, user.getEnabled());
+        userPs.setBoolean(3, user.getAccountNonExpired());
+        userPs.setBoolean(4, user.getAccountNonLocked());
+        userPs.setBoolean(5, user.getCredentialsNonExpired());
+        userPs.setObject(6, user.getId());
+        userPs.executeUpdate();
+
+        authorityDeletePs.setObject(1, user.getId());
+        authorityDeletePs.executeUpdate();
+
+        for (Authority authority : Authority.values()) {
+          authorityInsertPs.setObject(1, user.getId());
+          authorityInsertPs.setString(2, authority.name());
+          authorityInsertPs.addBatch();
+          authorityInsertPs.clearParameters();
+        }
+        authorityInsertPs.executeBatch();
+
+        conn.commit();
+        return user;
+      } catch (SQLException e) {
+        conn.rollback();
+        throw e;
+      } finally {
+        conn.setAutoCommit(true);
+      }
+    } catch (SQLException e) {
+      throw new RuntimeException(e);
+    }
+
+  }
+
+
+  @Override
+  public UserEntity updateUserInUserdata(UserEntity user) {
+    try (Connection conn = udDs.getConnection()) {
+      PreparedStatement psUd = conn.prepareStatement(
+              "UPDATE \"user\" SET username = ?, currency = ? WHERE id = ?");
+      psUd.setString(1, user.getUsername());
+      psUd.setString(2, user.getCurrency().name());
+      psUd.setObject(3, user.getId());
+      int rowsResult = psUd.executeUpdate();
+      if (rowsResult == 0) {
+        throw new IllegalStateException("Can`t find user with id " + user.getId());
+      }
+      return user;
+    } catch (SQLException e) {
+      throw new RuntimeException(e);
+    }
+  }
 }
