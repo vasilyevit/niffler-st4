@@ -38,7 +38,7 @@ public class SpendingTest extends BaseWebTest {
       category = "Обучение",
       currency = CurrencyValues.RUB
   )
-  @DisabledByIssue("74")
+//  @DisabledByIssue("74")
   @Test
   void spendingShouldBeDeletedByButtonDeleteSpending(SpendJson spend) {
     $(".spendings-table tbody")
@@ -46,6 +46,7 @@ public class SpendingTest extends BaseWebTest {
         .find(text(spend.description()))
         .$$("td")
         .first()
+            .scrollIntoView(true)
         .click();
 
     new MainPage()

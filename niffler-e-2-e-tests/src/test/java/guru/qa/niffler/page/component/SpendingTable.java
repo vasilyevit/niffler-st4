@@ -1,9 +1,8 @@
 package guru.qa.niffler.page.component;
 
-import com.codeborne.selenide.CollectionCondition;
-import com.codeborne.selenide.SelenideElement;
 import guru.qa.niffler.model.SpendJson;
 
+import static com.codeborne.selenide.Condition.text;
 import static com.codeborne.selenide.Selenide.$;
 import static guru.qa.niffler.condition.SpendCollectionCondition.spends;
 
@@ -15,6 +14,26 @@ public class SpendingTable extends BaseComponent<SpendingTable>{
 
   public SpendingTable checkSpends(SpendJson... expectedSpends) {
     getSelf().$$("tr").should(spends(expectedSpends));
+    return this;
+  }
+
+  public SpendingTable selectByIndex(int index) {
+    getSelf().$$("tr")
+            .get(index-1)
+            .$$("td")
+            .first()
+            .scrollIntoView(true)
+            .click();
+    return this;
+  }
+
+  public SpendingTable selectByText(String textVal) {
+    getSelf().$$("tr")
+            .find(text(textVal))
+            .$$("td")
+            .first()
+            .scrollIntoView(true)
+            .click();
     return this;
   }
 }
