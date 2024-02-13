@@ -9,10 +9,11 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 import static com.codeborne.selenide.Selenide.$;
+import static com.codeborne.selenide.Selenide.open;
 import static guru.qa.niffler.jupiter.annotation.User.UserType.WITH_FRIENDS;
 
 @ExtendWith(UsersQueueExtension.class)
-public class FriendsTest {
+public class FriendsTest extends BaseWebTest {
 
   @BeforeEach
   void doLogin(@User(WITH_FRIENDS) UserJson user) {
@@ -21,11 +22,14 @@ public class FriendsTest {
     $("input[name='username']").setValue(user.username());
     $("input[name='password']").setValue(user.testData().password());
     $("button[type='submit']").click();
+    mainPage.checkThatStatisticDisplayed();
+
   }
 
   @Test
   void friendsTableShouldNotBeEmpty0(@User(WITH_FRIENDS) UserJson user) throws Exception {
-    Thread.sleep(3000);
+    open("http://127.0.0.1:3000/friends");
+//    friendsPage.checkFriendsExist();
   }
 
   @Test
@@ -35,6 +39,30 @@ public class FriendsTest {
 
   @Test
   void friendsTableShouldNotBeEmpty2(@User(WITH_FRIENDS) UserJson user) throws Exception {
+    Thread.sleep(3000);
+  }
+
+  @Test
+  void friendsTableShouldNotBeEmpty3(@User(WITH_FRIENDS) UserJson user) throws Exception {
+    Thread.sleep(3000);
+  }
+
+  @Test
+  void friendsTableShouldNotBeEmpty4(@User(WITH_FRIENDS) UserJson user) throws Exception {
+    Thread.sleep(3000);
+  }
+  @Test
+  void friendsTableShouldNotBeEmpty5(@User(WITH_FRIENDS) UserJson user) throws Exception {
+    Thread.sleep(3000);
+  }
+
+  @Test
+  void friendsTableShouldNotBeEmpty6(@User(WITH_FRIENDS) UserJson user) throws Exception {
+    Thread.sleep(3000);
+  }
+
+  @Test
+  void friendsTableShouldNotBeEmpty7(@User(WITH_FRIENDS) UserJson user) throws Exception {
     Thread.sleep(3000);
   }
 }

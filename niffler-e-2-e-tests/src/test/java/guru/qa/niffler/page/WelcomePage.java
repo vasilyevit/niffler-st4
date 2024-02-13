@@ -1,5 +1,6 @@
 package guru.qa.niffler.page;
 
+import com.codeborne.selenide.Condition;
 import com.codeborne.selenide.SelenideElement;
 import io.qameta.allure.Step;
 
@@ -18,5 +19,10 @@ public class WelcomePage extends BasePage<WelcomePage> {
     @Step("Нажатие на кнопку Регистрация")
     public void register() {
         registerBtn.click();
+    }
+
+    public void checkForm(){
+        login.should(Condition.visible);
+        registerBtn.should(Condition.visible);
     }
 }

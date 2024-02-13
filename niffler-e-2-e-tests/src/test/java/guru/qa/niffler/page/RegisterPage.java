@@ -15,6 +15,12 @@ public class RegisterPage extends BasePage<RegisterPage> {
     private final SelenideElement submitBtn = $("button.form__submit");
 
 
+    public void checkForm(){
+        usernameInput.should(visible);
+        passwordInput.should(visible);
+        confirmPasswordInput.should(visible);
+        submitBtn.should(visible);
+    }
 
     @Step("Заполняем имя пользователя: {username}")
     public RegisterPage setUsername(String username) {

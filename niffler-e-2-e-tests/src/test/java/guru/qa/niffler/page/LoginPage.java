@@ -1,8 +1,10 @@
 package guru.qa.niffler.page;
 
+import com.codeborne.selenide.Condition;
 import com.codeborne.selenide.SelenideElement;
 import io.qameta.allure.Step;
 
+import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
 
 public class LoginPage extends BasePage<LoginPage> {
@@ -10,6 +12,12 @@ public class LoginPage extends BasePage<LoginPage> {
   private final SelenideElement loginInput = $("input[name='username']");
   private final SelenideElement passwordInput = $("input[name='password']");
   private final SelenideElement submitBtn = $("button[type='submit']");
+
+  public void checkForm(){
+    loginInput.should(visible);
+    passwordInput.should(visible);
+    submitBtn.should(visible);
+  }
 
   @Step("")
   public LoginPage setLogin(String login) {

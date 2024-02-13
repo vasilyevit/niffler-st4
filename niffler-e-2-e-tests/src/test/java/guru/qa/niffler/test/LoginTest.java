@@ -33,7 +33,7 @@ public class LoginTest extends BaseWebTest {
   @BeforeEach
   void createUser() {
     userAuth = new UserAuthEntity();
-    userAuth.setUsername("valentin_7");
+    userAuth.setUsername("valentin_54");
     userAuth.setPassword("12345");
     userAuth.setEnabled(true);
     userAuth.setAccountNonExpired(true);
@@ -51,7 +51,7 @@ public class LoginTest extends BaseWebTest {
     userAuth.addAuthorities(authorities);
 
     user = new UserEntity();
-    user.setUsername("valentin_7");
+    user.setUsername("valentin_54");
     user.setCurrency(CurrencyValues.RUB);
     userRepository.createInAuth(userAuth);
     userRepository.createInUserdata(user);

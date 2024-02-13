@@ -5,6 +5,7 @@ import com.codeborne.selenide.SelenideElement;
 import io.qameta.allure.Step;
 
 import static com.codeborne.selenide.Condition.value;
+import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
 import static com.codeborne.selenide.Selenide.$$;
 
@@ -41,11 +42,11 @@ public class ProfilePage extends BasePage<ProfilePage> {
         return this;
     }
 
-    @Step("Выбираем валюту: {currency}")
-    public ProfilePage setCurrency(String currency) {
-        currencySelect.selectOption(currency);
-        return this;
-    }
+//    @Step("Выбираем валюту: {currency}")
+//    public ProfilePage setCurrency(String currency) {
+//        currencySelect.selectOption(currency);
+//        return this;
+//    }
 
     @Step("Submit profile data")
     public ProfilePage submitData() {
@@ -77,10 +78,16 @@ public class ProfilePage extends BasePage<ProfilePage> {
         return this;
     }
 
-    @Step("Проверяем, что валюта равно: {currency}")
-    public ProfilePage checkCurrency(String currency) {
-        currencySelect.checkSelectedOption(currency);
-        return this;
+    public void checkForm() {
+        avatar.should(visible);
+        firstname.should(visible);
+        surname.should(visible);
     }
+//
+//    @Step("Проверяем, что валюта равно: {currency}")
+//    public ProfilePage checkCurrency(String currency) {
+//        currencySelect.checkSelectedOption(currency);
+//        return this;
+//    }
 
 }
