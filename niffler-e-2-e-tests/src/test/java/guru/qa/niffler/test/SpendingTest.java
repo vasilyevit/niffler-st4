@@ -41,17 +41,10 @@ public class SpendingTest extends BaseWebTest {
 //  @DisabledByIssue("74")
   @Test
   void spendingShouldBeDeletedByButtonDeleteSpending(SpendJson spend) {
-    $(".spendings-table tbody")
-        .$$("tr")
-        .find(text(spend.description()))
-        .$$("td")
-        .first()
-            .scrollIntoView(true)
-        .click();
-
-    new MainPage()
-        .getSpendingTable()
-        .checkSpends(spend);
+    mainPage
+            .getSpendingTable()
+            .checkSpends(spend)
+            .selectByText(spend.description());
 
 //    Allure.step("Delete spending", () -> $(byText("Delete selected"))
 //        .click());
