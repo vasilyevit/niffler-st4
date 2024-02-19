@@ -6,6 +6,7 @@ import guru.qa.niffler.db.model.UserAuthEntity;
 import guru.qa.niffler.db.model.UserEntity;
 import guru.qa.niffler.db.sjdbc.UserAuthEntityResultSetExtractor;
 import guru.qa.niffler.db.sjdbc.UserEntityRowMapper;
+import guru.qa.niffler.jupiter.logging.AllureJsonAppender;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -29,6 +30,7 @@ public class UserRepositorySJdbc implements UserRepository {
   private final JdbcTemplate udTemplate;
 
   private final PasswordEncoder pe = PasswordEncoderFactories.createDelegatingPasswordEncoder();
+  private final AllureJsonAppender allureJsonAppender = new AllureJsonAppender();
 
   public UserRepositorySJdbc() {
     JdbcTransactionManager authTm = new JdbcTransactionManager(
@@ -117,6 +119,8 @@ public class UserRepositorySJdbc implements UserRepository {
     }, kh);
 
     user.setId((UUID) kh.getKeys().get("id"));
+
+    allureJsonAppender.logJson("Create in Userdata", user);
     return user;
   }
 

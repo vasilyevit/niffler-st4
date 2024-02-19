@@ -7,6 +7,7 @@ import guru.qa.niffler.db.model.AuthorityEntity;
 import guru.qa.niffler.db.model.CurrencyValues;
 import guru.qa.niffler.db.model.UserAuthEntity;
 import guru.qa.niffler.db.model.UserEntity;
+import guru.qa.niffler.jupiter.logging.AllureJsonAppender;
 import io.qameta.allure.Allure;
 import io.qameta.allure.Step;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
@@ -26,6 +27,7 @@ public class UserRepositoryJdbc implements UserRepository {
   private final DataSource udDs = DataSourceProvider.INSTANCE.dataSource(Database.USERDATA);
 
   private final PasswordEncoder pe = PasswordEncoderFactories.createDelegatingPasswordEncoder();
+  private final AllureJsonAppender allureJsonAppender = new AllureJsonAppender();
 
   @Step("Create user in auth")
   @Override
@@ -145,6 +147,8 @@ public class UserRepositoryJdbc implements UserRepository {
     } catch (SQLException e) {
       throw new RuntimeException(e);
     }
+
+    allureJsonAppender.logJson("Create in Userdata", user);
     return user;
   }
 
