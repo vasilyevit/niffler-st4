@@ -7,6 +7,7 @@ import guru.qa.niffler.db.model.UserAuthEntity;
 import guru.qa.niffler.db.model.UserEntity;
 import guru.qa.niffler.db.repository.UserRepository;
 import guru.qa.niffler.db.repository.UserRepositoryHibernate;
+import guru.qa.niffler.jupiter.annotation.ApiLogin;
 import guru.qa.niffler.jupiter.annotation.DbUser;
 import guru.qa.niffler.utils.DataUtils;
 import org.junit.jupiter.api.extension.AfterTestExecutionCallback;
@@ -31,13 +32,25 @@ public class CreateUserExtension implements BeforeEachCallback, AfterTestExecuti
 
   @Override
   public void beforeEach(ExtensionContext extensionContext) throws Exception {
+    Optional<ApiLogin> apiLoginAnnotation = AnnotationSupport.findAnnotation(
+            extensionContext.getRequiredTestMethod(),
+            ApiLogin.class
+    );
+    boolean apiLoginB = false;
+    if (apiLoginAnnotation.isPresent()) {
+      ApiLogin apiLogin = apiLoginAnnotation.get();
+      apiLoginB = apiLogin.user().runnable();
+    }
+
     Optional<DbUser> dbUserAnnotation = AnnotationSupport.findAnnotation(
         extensionContext.getRequiredTestMethod(),
         DbUser.class
     );
 
-    if (dbUserAnnotation.isPresent()) {
-      DbUser dbUser = dbUserAnnotation.get();
+    if (dbUserAnnotation.isPresent() || apiLoginB) {
+      DbUser dbUser = apiLoginB
+              ? apiLoginAnnotation.get().user()
+              : dbUserAnnotation.get();
       String username = dbUser.username().isEmpty()
           ? DataUtils.generateRandomUsername()
           : dbUser.username();

@@ -9,9 +9,12 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.METHOD)
+@Target({ElementType.METHOD, ElementType.PARAMETER})
 @ExtendWith(CreateUserExtension.class)
 public @interface DbUser {
+
+  boolean runnable() default true;
+
   String username() default "";
 
   String password() default "";
