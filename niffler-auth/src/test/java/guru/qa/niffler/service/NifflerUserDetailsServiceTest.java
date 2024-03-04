@@ -50,7 +50,7 @@ class NifflerUserDetailsServiceTest {
   }
 
   @Test
-  void loadUserByUsernameNegayive() {
+  void loadUserByUsernameNegative() {
     final UsernameNotFoundException exception = assertThrows(
         UsernameNotFoundException.class,
         () -> nifflerUserDetailsService.loadUserByUsername("incorrect")
