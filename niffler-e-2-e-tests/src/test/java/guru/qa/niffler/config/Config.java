@@ -12,6 +12,10 @@ public interface Config {
 
   String authUrl();
 
+  String spendUrl();
+
+  String userdataUrl();
+
   String jdbcHost();
 
   String currencyGrpcHost();

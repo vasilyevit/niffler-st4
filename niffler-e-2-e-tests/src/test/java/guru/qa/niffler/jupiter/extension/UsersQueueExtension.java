@@ -60,7 +60,8 @@ public class UsersQueueExtension implements BeforeEachCallback, AfterTestExecuti
   public void afterTestExecution(ExtensionContext context) throws Exception {
     UserJson userFromTest = context.getStore(NAMESPACE)
         .get(context.getUniqueId(), UserJson.class);
-    users.get(userFromTest.testData().userTypeQueue()).add(userFromTest);
+    // Дмитрий сказал, что очереди больше не будут использоваться
+//    users.get(userFromTest.testData().userTypeQueue()).add(userFromTest);
   }
 
   @Override
@@ -88,7 +89,8 @@ public class UsersQueueExtension implements BeforeEachCallback, AfterTestExecuti
         null,
         new TestData(
             password,
-            userType
+            null,
+                null
         )
     );
   }
