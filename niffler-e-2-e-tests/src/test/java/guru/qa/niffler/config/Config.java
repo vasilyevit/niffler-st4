@@ -16,6 +16,8 @@ public interface Config {
 
   String userdataUrl();
 
+  String gatewayUrl();
+
   String jdbcHost();
 
   String currencyGrpcHost();

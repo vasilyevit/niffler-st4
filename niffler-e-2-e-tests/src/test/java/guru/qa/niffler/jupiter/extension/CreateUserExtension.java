@@ -55,7 +55,7 @@ public abstract class CreateUserExtension implements BeforeEachCallback, Paramet
   @Override
   public Object resolveParameter(ParameterContext parameterContext, ExtensionContext extensionContext) throws ParameterResolutionException {
     User user = AnnotationSupport.findAnnotation(parameterContext.getParameter(), User.class).get();
-    Map<User.Point, List<UserJson>> createdUsers= extensionContext.getStore(CREATE_USER_NAMESPACE).get(extensionContext.getUniqueId(), Map.class);
+    Map<User.Point, List<UserJson>> createdUsers = extensionContext.getStore(CREATE_USER_NAMESPACE).get(extensionContext.getUniqueId(), Map.class);
     List<UserJson> userJsons = createdUsers.get(user.value());
     if (parameterContext.getParameter().getType().isAssignableFrom(UserJson[].class)) {
       return userJsons.stream().toList().toArray(new UserJson[0]);
