@@ -16,6 +16,10 @@ public interface UserRepository {
 
   Optional<UserEntity> findByIdInUserdata(UUID id);
 
+  UserEntity findByUsernameInUserData(String username);
+
+  UserEntity updateUserInUserdata(UserEntity user);
+
   void deleteInAuthById(UUID id);
 
   void deleteInUserdataById(UUID id);

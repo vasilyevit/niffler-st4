@@ -173,6 +173,16 @@ public class UserRepositoryJdbc implements UserRepository {
   }
 
   @Override
+  public UserEntity findByUsernameInUserData(String username) {
+    return null;
+  }
+
+  @Override
+  public UserEntity updateUserInUserdata(UserEntity user) {
+    return null;
+  }
+
+  @Override
   public void deleteInAuthById(UUID id) {
     try (Connection conn = authDs.getConnection()) {
       conn.setAutoCommit(false);

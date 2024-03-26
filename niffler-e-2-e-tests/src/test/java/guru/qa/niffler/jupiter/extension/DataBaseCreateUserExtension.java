@@ -11,6 +11,9 @@ import guru.qa.niffler.utils.DataUtils;
 
 import java.util.Arrays;
 
+import static guru.qa.niffler.utils.DataUtils.generateRandomPassword;
+import static guru.qa.niffler.utils.DataUtils.generateRandomUsername;
+
 public class DataBaseCreateUserExtension extends CreateUserExtension {
 
   private static UserRepository userRepository = new UserRepositoryHibernate();
@@ -20,7 +23,7 @@ public class DataBaseCreateUserExtension extends CreateUserExtension {
   @Override
   public UserJson createUser(TestUser user) {
     String username = user.username().isEmpty()
-        ? DataUtils.generateRandomUsername()
+        ? generateRandomUsername()
         : user.username();
     String password = user.password().isEmpty()
         ? "12345"
@@ -92,4 +95,34 @@ public class DataBaseCreateUserExtension extends CreateUserExtension {
     createdUser.testData().spendJsons().add(SpendJson.fromEntity(spendRepository.createSpend(spendEntity)));
     return createdUser;
   }
+
+  @Override
+  public void createFriends(TestUser user, UserJson createdUser) {
+    UserEntity targetUser = userRepository.findByUsernameInUserData(createdUser.username());
+    UserJson friend = createUser(user);
+    UserEntity friendUser = userRepository.findByUsernameInUserData(friend.username());
+    targetUser.addFriends(false, friendUser);
+    friendUser.addFriends(false, targetUser);
+    userRepository.updateUserInUserdata(targetUser);
+    userRepository.updateUserInUserdata(friendUser);
+  }
+
+  @Override
+  public void createIncomeInvitation(TestUser user, UserJson createdUser) {
+    UserEntity targetUser = userRepository.findByUsernameInUserData(createdUser.username());
+    UserJson incomeInvitation = createUser(user);
+    UserEntity incomeInvitationUser = userRepository.findByUsernameInUserData(incomeInvitation.username());
+    incomeInvitationUser.addFriends(true, targetUser);
+    userRepository.updateUserInUserdata(incomeInvitationUser);
+  }
+
+  @Override
+  public void createOutcomeInvitations(TestUser user, UserJson createdUser) {
+    UserEntity targetUser = userRepository.findByUsernameInUserData(createdUser.username());
+    UserJson outcomeInvitation = createUser(user);
+    UserEntity outcomeInvitationUser = userRepository.findByUsernameInUserData(outcomeInvitation.username());
+    targetUser.addFriends(true, outcomeInvitationUser);
+    userRepository.updateUserInUserdata(targetUser);
+  }
+
 }

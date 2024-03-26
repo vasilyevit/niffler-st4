@@ -44,6 +44,9 @@ public abstract class CreateUserExtension implements BeforeEachCallback, Paramet
   public abstract UserJson createCategory(TestUser user, UserJson createdUser);
 
   public abstract UserJson createSpend(TestUser user, UserJson createdUser);
+  public abstract void createFriends(TestUser user, UserJson createdUser);
+  public abstract void createIncomeInvitation(TestUser user, UserJson createdUser);
+  public abstract void createOutcomeInvitations(TestUser user, UserJson createdUser);
 
   @Override
   public boolean supportsParameter(ParameterContext parameterContext, ExtensionContext extensionContext) throws ParameterResolutionException {

@@ -84,4 +84,19 @@ public class RestCreateUserExtension extends CreateUserExtension {
     }
     return createdUser;
   }
+
+  @Override
+  public void createFriends(TestUser user, UserJson createdUser) {
+
+  }
+
+  @Override
+  public void createIncomeInvitation(TestUser user, UserJson createdUser) {
+
+  }
+
+  @Override
+  public void createOutcomeInvitations(TestUser user, UserJson createdUser) {
+
+  }
 }

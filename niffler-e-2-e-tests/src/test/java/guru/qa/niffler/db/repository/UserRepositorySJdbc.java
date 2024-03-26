@@ -136,6 +136,16 @@ public class UserRepositorySJdbc implements UserRepository {
   }
 
   @Override
+  public UserEntity findByUsernameInUserData(String username) {
+    return null;
+  }
+
+  @Override
+  public UserEntity updateUserInUserdata(UserEntity user) {
+    return null;
+  }
+
+  @Override
   public void deleteInAuthById(UUID id) {
     authTxt.execute(status -> {
       authTemplate.update("DELETE FROM \"authority\" WHERE user_id = ?", id);
